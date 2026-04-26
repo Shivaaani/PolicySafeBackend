@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PolicySafe — Know What Your Insurance Actually Covers</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #1a1a18; --ink-muted: #6b6b65; --ink-faint: #a8a89f;
+    --paper: #faf9f6; --paper-warm: #f3f1eb; --paper-card: #ffffff;
+    --accent: #1d6b4a; --accent-light: #e8f4ee; --accent-mid: #2a8f60;
+    --danger: #c0392b; --danger-light: #fdf0ee;
+    --warn: #b7640a; --warn-light: #fef6ec;
+    --ok: #1d6b4a; --ok-light: #e8f4ee;
+    --border: rgba(26,26,24,0.10); --border-strong: rgba(26,26,24,0.18);
+    --radius: 10px; --radius-lg: 16px;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--paper); color: var(--ink); font-size: 16px; line-height: 1.6; }
+
+  /* NAV */
+  nav { padding: 18px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: var(--paper); position: sticky; top: 0; z-index: 100; }
+  .logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 600; color: var(--ink); }
+  .logo span { color: var(--accent); }
+  .nav-links a { font-size: 14px; color: var(--ink-muted); text-decoration: none; margin-left: 28px; }
+  .nav-cta { background: var(--accent); color: #fff !important; padding: 8px 18px; border-radius: 6px; font-weight: 500 !important; }
+
+  /* HERO */
+  .hero { max-width: 860px; margin: 0 auto; padding: 72px 40px 56px; text-align: center; }
+  .hero-badge { display: inline-block; background: var(--accent-light); color: var(--accent); font-size: 11px; font-weight: 500; padding: 5px 14px; border-radius: 20px; margin-bottom: 24px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(34px, 5vw, 54px); font-weight: 500; line-height: 1.15; letter-spacing: -0.8px; margin-bottom: 20px; }
+  .hero h1 em { font-style: italic; color: var(--accent); }
+  .hero p { font-size: 17px; color: var(--ink-muted); max-width: 500px; margin: 0 auto 36px; font-weight: 300; line-height: 1.7; }
+  .hero-cta { display: inline-block; background: var(--accent); color: #fff; padding: 14px 36px; border-radius: 8px; font-size: 15px; font-weight: 500; text-decoration: none; cursor: pointer; border: none; font-family: 'DM Sans', sans-serif; transition: background 0.2s; }
+  .hero-cta:hover { background: var(--accent-mid); }
+
+  /* TRUST BAR */
+  .trust-bar { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--paper-warm); padding: 14px 40px; display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
+  .trust-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--ink-muted); }
+  .trust-dot { width: 5px; height: 5px; background: var(--accent); border-radius: 50%; flex-shrink: 0; }
+
+  /* PAIN SECTION */
+  .section { max-width: 860px; margin: 72px auto; padding: 0 40px; }
+  .section-label { font-size: 10px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 14px; }
+  .section h2 { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 500; margin-bottom: 40px; max-width: 480px; line-height: 1.3; }
+  .pain-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+  .pain-card { background: var(--paper-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px; }
+  .pain-tag { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; background: var(--danger-light); color: var(--danger); padding: 3px 9px; border-radius: 4px; display: inline-block; margin-bottom: 12px; }
+  .pain-card h3 { font-size: 14px; font-weight: 500; margin-bottom: 7px; }
+  .pain-card p { font-size: 13px; color: var(--ink-muted); line-height: 1.55; }
+
+  /* ANALYSER */
+  .analyser-section { background: var(--paper-warm); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 72px 40px; }
+  .analyser-inner { max-width: 680px; margin: 0 auto; }
+  .analyser-inner h2 { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 500; margin-bottom: 6px; }
+  .analyser-inner > p { color: var(--ink-muted); font-size: 14px; margin-bottom: 28px; font-weight: 300; }
+  .analyser-card { background: var(--paper-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+  .analyser-header { padding: 16px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 6px; }
+  .win-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .analyser-header .title { font-size: 12px; color: var(--ink-muted); margin-left: 6px; font-weight: 500; }
+  .analyser-body { padding: 24px; }
+
+  /* UPLOAD ZONE */
+  .upload-zone { border: 1.5px dashed var(--border-strong); border-radius: var(--radius); padding: 36px 24px; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; background: var(--paper); margin-bottom: 16px; }
+  .upload-zone:hover, .upload-zone.drag-over { border-color: var(--accent); background: var(--accent-light); }
+  .upload-zone.has-file { border-color: var(--accent); background: var(--accent-light); border-style: solid; }
+  .upload-icon { width: 36px; height: 36px; margin: 0 auto 12px; opacity: 0.4; }
+  .upload-title { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
+  .upload-sub { font-size: 12px; color: var(--ink-muted); }
+  .upload-filename { font-size: 13px; font-weight: 500; color: var(--accent); margin-top: 8px; }
+  #fileInput { display: none; }
+
+  .or-divider { display: flex; align-items: center; gap: 12px; margin: 16px 0; }
+  .or-divider::before, .or-divider::after { content: ''; flex: 1; border-top: 1px solid var(--border); }
+  .or-divider span { font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .input-group { margin-bottom: 16px; }
+  .input-group label { display: block; font-size: 11px; font-weight: 500; color: var(--ink-muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .input-group select, .input-group textarea { width: 100%; background: var(--paper); border: 1px solid var(--border-strong); border-radius: var(--radius); padding: 9px 13px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--ink); outline: none; transition: border-color 0.2s; }
+  .input-group select:focus, .input-group textarea:focus { border-color: var(--accent); }
+  .input-group textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+
+  .analyse-btn { width: 100%; background: var(--accent); color: #fff; border: none; padding: 13px; border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; margin-top: 4px; transition: background 0.2s, opacity 0.2s; }
+  .analyse-btn:hover { background: var(--accent-mid); }
+  .analyse-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* LOADING */
+  .loading-state { text-align: center; padding: 28px; display: none; }
+  .loading-state.visible { display: block; }
+  .spinner { width: 28px; height: 28px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-state p { font-size: 13px; color: var(--ink-muted); }
+
+  /* RESULTS */
+  .result-area { display: none; margin-top: 24px; }
+  .result-area.visible { display: block; }
+  .result-divider { border: none; border-top: 1px solid var(--border); margin-bottom: 22px; }
+
+  .policy-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+  .meta-card { background: var(--paper); border-radius: var(--radius); padding: 12px 14px; border: 1px solid var(--border); }
+  .meta-label { font-size: 10px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+  .meta-val { font-size: 13px; font-weight: 500; }
+
+  .score-row { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; padding: 14px 18px; background: var(--paper); border-radius: var(--radius); border: 1px solid var(--border); }
+  .score-circle { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 500; font-family: 'Playfair Display', serif; flex-shrink: 0; }
+  .score-circle.good { background: var(--ok-light); color: var(--ok); }
+  .score-circle.warn { background: var(--warn-light); color: var(--warn); }
+  .score-circle.bad { background: var(--danger-light); color: var(--danger); }
+  .score-label-text { font-size: 12px; color: var(--ink-muted); margin-top: 2px; }
+
+  .findings-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+  .finding-item { border-radius: var(--radius); padding: 13px 15px; border-left: 3px solid; }
+  .finding-item.critical { background: var(--danger-light); border-color: var(--danger); }
+  .finding-item.warning { background: var(--warn-light); border-color: var(--warn); }
+  .finding-item.ok { background: var(--ok-light); border-color: var(--ok); }
+  .finding-tag { font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px; }
+  .finding-item.critical .finding-tag { color: var(--danger); }
+  .finding-item.warning .finding-tag { color: var(--warn); }
+  .finding-item.ok .finding-tag { color: var(--ok); }
+  .finding-title { font-size: 13px; font-weight: 500; margin-bottom: 3px; }
+  .finding-desc { font-size: 12px; color: var(--ink-muted); line-height: 1.55; }
+
+  .actions-box { background: var(--paper); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 14px; }
+  .actions-box h4 { font-size: 12px; font-weight: 500; margin-bottom: 10px; }
+  .action-item { display: flex; gap: 8px; font-size: 12px; color: var(--ink-muted); margin-bottom: 6px; line-height: 1.5; }
+  .action-num { background: var(--accent); color: #fff; width: 16px; height: 16px; border-radius: 50%; font-size: 9px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+
+  .upsell-box { background: var(--accent-light); border-radius: var(--radius); padding: 14px 16px; border: 1px solid rgba(29,107,74,0.15); }
+  .upsell-box p { font-size: 12px; color: var(--ink-muted); line-height: 1.6; margin-bottom: 10px; }
+  .upsell-box strong { color: var(--ink); }
+  .btn-accent { background: var(--accent); color: #fff; border: none; padding: 9px 20px; border-radius: 6px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+  .btn-accent:hover { background: var(--accent-mid); }
+
+  /* HOW IT WORKS */
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; }
+  .step-num { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 400; color: var(--border-strong); line-height: 1; margin-bottom: 10px; }
+  .step h3 { font-size: 14px; font-weight: 500; margin-bottom: 5px; }
+  .step p { font-size: 12px; color: var(--ink-muted); line-height: 1.6; }
+
+  /* WAITLIST */
+  .waitlist-section { background: var(--ink); padding: 72px 40px; text-align: center; }
+  .waitlist-section h2 { font-family: 'Playfair Display', serif; font-size: 34px; font-weight: 500; color: #fff; margin-bottom: 10px; }
+  .waitlist-section p { color: rgba(255,255,255,0.45); font-size: 15px; margin-bottom: 28px; font-weight: 300; }
+  .waitlist-form { display: flex; gap: 8px; max-width: 400px; margin: 0 auto; flex-wrap: wrap; justify-content: center; }
+  .waitlist-form input { flex: 1; min-width: 200px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 11px 16px; border-radius: 7px; font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; }
+  .waitlist-form input::placeholder { color: rgba(255,255,255,0.3); }
+  .waitlist-form button { background: var(--accent); color: #fff; border: none; padding: 11px 22px; border-radius: 7px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; }
+  .waitlist-success { display: none; color: #a8f0c8; font-size: 14px; margin-top: 14px; }
+
+  footer { padding: 24px 40px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+  footer p { font-size: 11px; color: var(--ink-faint); }
+
+  /* BACKEND CONFIG NOTICE */
+  .config-notice { background: var(--warn-light); border: 1px solid rgba(183,100,10,0.2); border-radius: var(--radius); padding: 10px 14px; margin-bottom: 16px; font-size: 12px; color: var(--warn); display: none; }
+  .config-notice a { color: var(--warn); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Policy<span>Safe</span></div>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#analyse">Try it free</a>
+    <a href="#waitlist" class="nav-cta">Join waitlist</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-badge">Free insurance audit — upload your PDF</div>
+  <h1>Your insurance has fine print<br>you've <em>never read.</em></h1>
+  <p>Upload your policy document. We read the fine print and tell you exactly what gaps could cost you lakhs when you need it most.</p>
+  <button class="hero-cta" onclick="document.getElementById('analyse').scrollIntoView({behavior:'smooth'})">Analyse my policy — free</button>
+</section>
+
+<div class="trust-bar">
+  <div class="trust-item"><div class="trust-dot"></div>No signup required</div>
+  <div class="trust-item"><div class="trust-dot"></div>PDF never stored</div>
+  <div class="trust-item"><div class="trust-dot"></div>Works with all Indian insurers</div>
+  <div class="trust-item"><div class="trust-dot"></div>No spam calls</div>
+</div>
+
+<section class="section">
+  <div class="section-label">The problem</div>
+  <h2>Most people find out about their policy gaps during a claim.</h2>
+  <div class="pain-grid">
+    <div class="pain-card">
+      <div class="pain-tag">Hidden clause</div>
+      <h3>Room rent sub-limits</h3>
+      <p>₹10L health cover but a ₹3,000/day room rent cap. One hospitalisation can leave you paying ₹2–3L out of pocket.</p>
+    </div>
+    <div class="pain-card">
+      <div class="pain-tag">Missed coverage</div>
+      <h3>Employer cover blind spot</h3>
+      <p>Your group health cover ends the day you resign. Most professionals have no backup and a 30-day window with zero cover.</p>
+    </div>
+    <div class="pain-card">
+      <div class="pain-tag">False security</div>
+      <h3>Co-payment clauses</h3>
+      <p>Policies that require you to pay 10–20% of every claim. Buried in 60 pages most people never open.</p>
+    </div>
+    <div class="pain-card">
+      <div class="pain-tag">Critical gap</div>
+      <h3>No term life cover</h3>
+      <p>An endowment or ULIP is not term insurance. If you have dependents and no term cover, your family is exposed.</p>
+    </div>
+  </div>
+</section>
+
+<section class="analyser-section" id="analyse">
+  <div class="analyser-inner">
+    <div class="section-label">Live analyser</div>
+    <h2>Upload your policy. Get your gap report.</h2>
+    <p>PDF, any Indian insurer. Takes about 15 seconds. No account needed.</p>
+
+    <div class="analyser-card">
+      <div class="analyser-header">
+        <div class="win-dot" style="background:#e74c3c"></div>
+        <div class="win-dot" style="background:#f39c12;margin-left:4px"></div>
+        <div class="win-dot" style="background:#2ecc71;margin-left:4px"></div>
+        <div class="title">PolicySafe Analyser</div>
+      </div>
+      <div class="analyser-body">
+
+        <div class="config-notice" id="configNotice">
+          Backend not configured yet. Set <code>BACKEND_URL</code> in the script below to your Render.com URL. 
+          <a href="#setup-guide">See setup guide below.</a>
+        </div>
+
+        <div class="input-group">
+          <label>Policy type</label>
+          <select id="policyType">
+            <option value="health">Health insurance</option>
+            <option value="term">Term life insurance</option>
+            <option value="motor">Motor insurance</option>
+            <option value="home">Home insurance</option>
+          </select>
+        </div>
+
+        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+          <input type="file" id="fileInput" accept=".pdf" onchange="handleFileSelect(this)">
+          <svg class="upload-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="6" y="4" width="24" height="28" rx="3" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M12 14h12M12 19h12M12 24h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M21 4v6h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="upload-title" id="uploadTitle">Drop your policy PDF here</div>
+          <div class="upload-sub" id="uploadSub">or click to browse — Star Health, HDFC Ergo, Niva Bupa, LIC and more</div>
+          <div class="upload-filename" id="uploadFilename"></div>
+        </div>
+
+        <div class="or-divider"><span>or paste policy text instead</span></div>
+
+        <div class="input-group">
+          <label>Paste policy text or describe your cover</label>
+          <textarea id="policyText" placeholder="E.g. 'Star Health family floater ₹5L, 2 adults 1 child' or paste clauses from your policy document..."></textarea>
+        </div>
+
+        <button class="analyse-btn" id="analyseBtn" onclick="analysePolicy()">Analyse my policy</button>
+
+        <div class="loading-state" id="loadingState">
+          <div class="spinner"></div>
+          <p>Reading your policy and identifying gaps...</p>
+          <p style="font-size:11px;margin-top:5px;color:var(--ink-faint)">Usually takes 10–20 seconds</p>
+        </div>
+
+        <div class="result-area" id="resultArea">
+          <hr class="result-divider">
+          <div class="policy-meta" id="policyMeta"></div>
+          <div class="score-row" id="scoreRow"></div>
+          <div class="findings-list" id="findingsList"></div>
+          <div class="actions-box" id="actionsBox"></div>
+          <div class="upsell-box">
+            <p><strong>Want a full portfolio audit?</strong> Join the waitlist and we'll analyse all your policies together — health, life, motor — and give you a complete Insurance Health Score with a personalised action plan.</p>
+            <button class="btn-accent" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">Join the waitlist</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="how">
+  <div class="section-label">How it works</div>
+  <h2>Your insurance health check in three steps</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <h3>Upload your policy</h3>
+      <p>Drop your PDF — health, life, or motor. We extract the text securely. Your document is never stored.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <h3>We find your gaps</h3>
+      <p>Our AI surfaces dangerous clauses, hidden sub-limits, and missing cover — explained in plain English.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <h3>You get your score</h3>
+      <p>A clear Insurance Health Score and specific actions to take. No spam calls. No agent follow-ups.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <h3>We stay with you</h3>
+      <p>Life changes. New job, baby, home loan — we flag what changes in your coverage before it's too late.</p>
+    </div>
+  </div>
+</section>
+
+<section class="waitlist-section" id="waitlist">
+  <h2>Be among the first</h2>
+  <p>Onboarding users in Bengaluru first. Join the waitlist for early access.</p>
+  <div class="waitlist-form">
+    <input type="email" id="waitlistEmail" placeholder="your@email.com">
+    <button onclick="joinWaitlist()">Get early access</button>
+  </div>
+  <div class="waitlist-success" id="waitlistSuccess">You're on the list. We'll be in touch soon.</div>
+</section>
+
+<footer>
+  <div class="logo" style="font-size:18px">Policy<span style="color:var(--accent)">Safe</span></div>
+  <p>Built in Bengaluru. Not an insurance company or broker.</p>
+  <p>Disclaimer: For informational purposes only. Always verify with your insurer.</p>
+</footer>
+
+<script>
+  // ─── CONFIG ───────────────────────────────────────────────────────────────
+  // After deploying to Render.com, replace this with your actual backend URL.
+  // Example: const BACKEND_URL = "https://policysafe-api.onrender.com";
+  const BACKEND_URL = "";
+  // ──────────────────────────────────────────────────────────────────────────
+
+  let selectedFile = null;
+
+  if (!BACKEND_URL) {
+    document.getElementById('configNotice').style.display = 'block';
+  }
+
+  const uploadZone = document.getElementById('uploadZone');
+  uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+  uploadZone.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadZone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type === 'application/pdf') setFile(file);
+  });
+
+  function handleFileSelect(input) {
+    if (input.files[0]) setFile(input.files[0]);
+  }
+
+  function setFile(file) {
+    selectedFile = file;
+    uploadZone.classList.add('has-file');
+    document.getElementById('uploadTitle').textContent = 'PDF selected';
+    document.getElementById('uploadSub').textContent = '';
+    document.getElementById('uploadFilename').textContent = file.name;
+  }
+
+  async function analysePolicy() {
+    if (!BACKEND_URL) {
+      alert('Backend not configured yet. Set BACKEND_URL in the script to your Render.com URL.');
+      return;
+    }
+
+    const policyText = document.getElementById('policyText').value.trim();
+    const policyType = document.getElementById('policyType').value;
+
+    if (!selectedFile && !policyText) {
+      alert('Please upload a PDF or paste some policy text first.');
+      return;
+    }
+
+    document.getElementById('analyseBtn').disabled = true;
+    document.getElementById('loadingState').classList.add('visible');
+    document.getElementById('resultArea').classList.remove('visible');
+
+    const formData = new FormData();
+    formData.append('policy_type', policyType);
+    if (selectedFile) {
+      formData.append('file', selectedFile);
+    } else {
+      formData.append('text', policyText);
+    }
+
+    try {
+      const response = await fetch(`${BACKEND_URL}/analyse`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Server error');
+      }
+
+      const result = await response.json();
+      renderResult(result);
+
+    } catch (err) {
+      document.getElementById('loadingState').classList.remove('visible');
+      document.getElementById('analyseBtn').disabled = false;
+      alert('Something went wrong: ' + err.message);
+    }
+  }
+
+  function renderResult(r) {
+    document.getElementById('loadingState').classList.remove('visible');
+    document.getElementById('analyseBtn').disabled = false;
+
+    document.getElementById('policyMeta').innerHTML = `
+      <div class="meta-card"><div class="meta-label">Insurer</div><div class="meta-val">${r.insurer || '—'}</div></div>
+      <div class="meta-card"><div class="meta-label">Policy type</div><div class="meta-val">${r.policy_type || '—'}</div></div>
+      <div class="meta-card"><div class="meta-label">Sum insured</div><div class="meta-val">${r.sum_insured || '—'}</div></div>
+    `;
+
+    document.getElementById('scoreRow').innerHTML = `
+      <div class="score-circle ${r.score_color}">${r.score}</div>
+      <div>
+        <div style="font-size:15px;font-weight:500">${r.score_label}</div>
+        <div class="score-label-text">${r.summary}</div>
+      </div>
+    `;
+
+    document.getElementById('findingsList').innerHTML = (r.findings || []).map(f => `
+      <div class="finding-item ${f.type}">
+        <div class="finding-tag">${f.type === 'critical' ? 'Critical gap' : f.type === 'warning' ? 'Risk found' : 'Looks good'}</div>
+        <div class="finding-title">${f.title}</div>
+        <div class="finding-desc">${f.description}</div>
+      </div>
+    `).join('');
+
+    const actions = r.recommended_actions || [];
+    document.getElementById('actionsBox').innerHTML = actions.length ? `
+      <h4>Recommended actions</h4>
+      ${actions.map((a, i) => `
+        <div class="action-item">
+          <div class="action-num">${i + 1}</div>
+          <div>${a}</div>
+        </div>
+      `).join('')}
+    ` : '';
+
+    document.getElementById('resultArea').classList.add('visible');
+    document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function joinWaitlist() {
+    const email = document.getElementById('waitlistEmail').value.trim();
+    if (!email || !email.includes('@')) { alert('Please enter a valid email.'); return; }
+    document.getElementById('waitlistSuccess').style.display = 'block';
+    document.getElementById('waitlistEmail').value = '';
+    document.querySelector('.waitlist-form button').disabled = true;
+  }
+</script>
+</body>
+</html>
