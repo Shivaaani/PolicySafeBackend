@@ -223,9 +223,9 @@
       </div>
       <div class="analyser-body">
 
-        <div class="config-notice" id="configNotice">
-          Backend not configured yet. Set <code>BACKEND_URL</code> in the script below to your Render.com URL. 
-          <a href="#setup-guide">See setup guide below.</a>
+        
+          
+          
         </div>
 
         <div class="input-group">
@@ -328,14 +328,12 @@
 <script>
   // ─── CONFIG ───────────────────────────────────────────────────────────────
   // After deploying to Render.com, replace this with your actual backend URL.
-  // Example: const BACKEND_URL = "https://policysafe-api.onrender.com";
-  const BACKEND_URL = "";
+  const BACKEND_URL = "https://policysafebackend.onrender.com";
   // ──────────────────────────────────────────────────────────────────────────
 
   let selectedFile = null;
 
   if (!BACKEND_URL) {
-    document.getElementById('configNotice').style.display = 'block';
   }
 
   const uploadZone = document.getElementById('uploadZone');
@@ -362,7 +360,6 @@
 
   async function analysePolicy() {
     if (!BACKEND_URL) {
-      alert('Backend not configured yet. Set BACKEND_URL in the script to your Render.com URL.');
       return;
     }
 
@@ -448,12 +445,35 @@
     document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  function joinWaitlist() {
+  async function joinWaitlist() {
     const email = document.getElementById('waitlistEmail').value.trim();
     if (!email || !email.includes('@')) { alert('Please enter a valid email.'); return; }
-    document.getElementById('waitlistSuccess').style.display = 'block';
-    document.getElementById('waitlistEmail').value = '';
-    document.querySelector('.waitlist-form button').disabled = true;
+
+    const btn = document.querySelector('.waitlist-form button');
+    btn.disabled = true;
+    btn.textContent = 'Joining...';
+
+    try {
+      const response = await fetch(BACKEND_URL + '/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const result = await response.json();
+      if (result.success) {
+        document.getElementById('waitlistSuccess').style.display = 'block';
+        document.getElementById('waitlistEmail').value = '';
+        btn.textContent = 'Joined!';
+      } else {
+        alert(result.error || 'Something went wrong. Please try again.');
+        btn.disabled = false;
+        btn.textContent = 'Get early access';
+      }
+    } catch (err) {
+      alert('Could not connect. Please try again.');
+      btn.disabled = false;
+      btn.textContent = 'Get early access';
+    }
   }
 </script>
 </body>
